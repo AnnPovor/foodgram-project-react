@@ -117,3 +117,96 @@ class IngredientRecipe(models.Model):
 
     def __str__(self):
         return f'{self.recipe} {self.ingredients}'
+
+
+class Cart(models.Model):
+    """
+    Создание модели корзины.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+        help_text='Выберите пользователя'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='carts',
+        verbose_name='Рецепты',
+        help_text='Выберите рецепты для добавления в корзины'
+    )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзины'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'recipe'],
+                                    name='unique_cart')
+        ]
+
+    def __str__(self):
+        return f'{self.user} {self.recipe}'
+
+
+class Subscribe(models.Model):
+    """
+    Создание модели подписок.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Пользователь',
+        help_text='Выберите пользователя, который подписывается'
+    )
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Автор',
+        help_text='Выберите автора для подписки'
+    )
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'following'],
+                                    name='unique_subscribe')
+        ]
+
+    def __str__(self):
+        return f'{self.user} {self.following}'
+
+
+class Favorite(models.Model):
+    """
+    Создание модели избранных рецептов.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+        help_text='Выберите пользователя'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Рецепт',
+        help_text='Выберите рецепт'
+    )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Избранный'
+        verbose_name_plural = 'Избранные'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'recipe'],
+                                    name='unique_favorite')
+        ]
+
+    def __str__(self):
+        return f'{self.recipe} {self.user}'
