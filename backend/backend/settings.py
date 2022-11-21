@@ -33,6 +33,8 @@ AUTH_USER_MODEL = 'users.User'
 INSTALLED_APPS = [
     'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
+    'colorfield',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
