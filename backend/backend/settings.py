@@ -31,17 +31,20 @@ AUTH_USER_MODEL = 'users.User'
 # Application definition
 
 INSTALLED_APPS = [
-    'recipes.apps.RecipesConfig',
-    'users.apps.UsersConfig',
-    'api.apps.ApiConfig',
-    'colorfield',
-    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'recipes.apps.RecipesConfig',
+    'users.apps.UsersConfig',
+    'api.apps.ApiConfig',
+    'colorfield',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +126,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 6
+}
+
+DJOSER = {
+    'HIDE_USERS': False,
+    'LOGIN_FIELD': 'email',
+
+    "SERIALIZERS": {
+            "user_create": "api.serializers.CustomUserCreateSerializer",
+            "user": "api.serializers.CustomUserSerializer",
+            "current_user": "api.serializers.CustomUserSerializer",
+    },
+
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.AllowAny'],
+        'user': ['rest_framework.permissions.IsAuthenticated'],
+    }
+}
+

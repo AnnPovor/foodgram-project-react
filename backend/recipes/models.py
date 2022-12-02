@@ -78,7 +78,7 @@ class Recipe(models.Model):
 
     image = models.ImageField(
         'Изображение',
-        upload_to='recipes/')
+        upload_to='recipes/image')
 
     class Meta:
         ordering = ('-pub_date',)
@@ -91,12 +91,12 @@ class Recipe(models.Model):
 
 class IngredientRecipe(models.Model):
     """Модель ингредиентов в рецепте"""
-    ingredients = models.ForeignKey(Ingredient,
-                                    on_delete=models.CASCADE,
-                                    related_name='ingredientrecipes',
-                                    verbose_name='Продукты блюда',
-                                    help_text='Выберите продукты для блюда'
-                                    )
+    ingredient = models.ForeignKey(Ingredient,
+                                   on_delete=models.CASCADE,
+                                   related_name='ingredientrecipes',
+                                   verbose_name='Продукты блюда',
+                                   help_text='Выберите продукты для блюда'
+                                   )
 
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.CASCADE,
@@ -106,9 +106,10 @@ class IngredientRecipe(models.Model):
                                )
 
     amount = models.IntegerField(
+        default=1,
         validators=[MinValueValidator(1)],
-        verbose_name='Количество',
-        help_text='Поставьте количество'
+        verbose_name='Количество продукта',
+        help_text='Введите количество продукта'
     )
 
     class Meta:
@@ -116,7 +117,7 @@ class IngredientRecipe(models.Model):
         verbose_name_plural = 'Ингредиенты рецептов'
 
     def __str__(self):
-        return f'{self.recipe} {self.ingredients}'
+        return f'{self.recipe} {self.ingredient}'
 
 
 class Cart(models.Model):
