@@ -2,18 +2,22 @@ from http import HTTPStatus
 
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
+from rest_framework import filters
 from rest_framework import views
 from rest_framework import viewsets, status, permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from recipes.models import Tag, Recipe, Ingredient, Subscribe, Favorite, \
-    IngredientRecipe, Cart
+from recipes.models import (Tag, Recipe, Ingredient, Subscribe, Favorite,
+                            IngredientRecipe, Cart)
 from users.models import User
-from .filtres import IngredientSearchFilter, RecipeFilters
+from .filtres import RecipeFilters
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (TagSerializer, RecipeSerializer, IngredientSerializer,
                           SubscribeSerializer,
@@ -38,8 +42,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [permissions.AllowAny]
-    filter_backends = (IngredientSearchFilter,)
-    search_fields = ('^name',)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
 class CreateUserViewSet(UserViewSet):
@@ -48,9 +52,7 @@ class CreateUserViewSet(UserViewSet):
     """
     serializer_class = CustomUserCreateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        return User.objects.all()
+    queryset = User.objects.all()
 
 
 class SubscribeViewSet(viewsets.ModelViewSet):
@@ -61,7 +63,8 @@ class SubscribeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return get_list_or_404(User, following__user=self.request.user)
+        return User.objects.filter(
+            following__user=self.request.user)
 
     def create(self, request, *args, **kwargs):
         """
@@ -103,8 +106,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         if self.request.method == 'GET':
             return RecipeListSerializer
-        else:
-            return RecipeSerializer
+        return RecipeSerializer
 
 
 class ShoppingCartAPIView(views.APIView):
@@ -135,23 +137,43 @@ class DownloadCart(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def download(self, request):
+        """
+        Метод сохранения списка покупок в формате PDF.
+        """
         ingredients = IngredientRecipe.objects.filter(
             recipe__carts__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
         ).annotate(amount=Sum('amount'))
-        shopping_cart = ['Список покупок:\n--------------']
-        for position, ingredient in enumerate(ingredients, start=1):
-            shopping_cart.append(
-                f'\n{position}. {ingredient["ingredient__name"]}:'
-                f' {ingredient["amount"]}'
-                f'({ingredient["ingredient__measurement_unit"]})'
-            )
-        response = HttpResponse(shopping_cart, content_type='text')
-        response['Content-Disposition'] = (
-            'attachment;filename=shopping_cart.pdf'
-        )
+
+        final_list = {}
+        for ingredient in ingredients:
+            name = ingredient[0]
+            if name not in final_list:
+                final_list[name] = {
+                    'measurement_unit': ingredient[1],
+                    'amount': ingredient[2]
+                }
+            else:
+                final_list[name]['amount'] += ingredient[2]
+        pdfmetrics.registerFont(
+            TTFont('FreeSans', 'data/FreeSans.ttf', 'UTF-8'))
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = ('attachment; '
+                                           'filename="shopping_list.pdf"')
+        c = canvas.Canvas(response)
+        c.setFont('FreeSans', size=24)
+        c.drawString(200, 800, 'Список ингредиентов')
+        c.setFont('FreeSans', size=16)
+        height = 750
+        for i, (name, data) in enumerate(final_list.items(), 1):
+            c.drawString(75, height, (f'<{i}> {name} - {data["amount"]}, '
+                                      f'{data["measurement_unit"]}'))
+            height -= 25
+        c.showPage()
+        c.save()
         return response
 
 
