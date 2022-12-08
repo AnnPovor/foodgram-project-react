@@ -30,4 +30,4 @@ urlpatterns = [
                                    'delete': 'delete'}), name='subscribe'),
     path('', include(router.urls)),
     path('auth/', include('djoser.urls.authtoken')),
-    ]
+]

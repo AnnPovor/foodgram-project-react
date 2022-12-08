@@ -28,8 +28,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
+        return User.objects.create_user(**validated_data)
 
 
 class CustomUserSerializer(UserSerializer):
@@ -65,7 +64,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit',
-        )
+    )
 
     class Meta:
         model = IngredientRecipe
@@ -103,17 +102,15 @@ class RecipeListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
-        if Favorite.objects.filter(user=request.user,
-                                   recipe__id=obj.id).exists():
-            return True
+        return Favorite.objects.filter(user=request.user,
+                                       recipe__id=obj.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
-        if Cart.objects.filter(user=request.user,
-                               recipe__id=obj.id).exists():
-            return True
+        return Cart.objects.filter(user=request.user,
+                                   recipe__id=obj.id).exists()
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -245,8 +242,8 @@ class SubscribeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
-        return Subscribe.objects.filter(
-                user=request.user, following__id=obj.id).exists()
+        return Subscribe.objects.filter(user=request.user,
+                                        following__id=obj.id).exists()
 
     def get_recipes_count(self, obj):
         """Определение количества рецептов автора"""
