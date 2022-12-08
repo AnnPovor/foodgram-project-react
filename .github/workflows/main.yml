@@ -58,7 +58,7 @@ jobs:
           context: backend/
           file: backend/Dockerfile
           push: true
-          tags: samadhihunter/foodgram:latest
+          tags: samadhihunter/foodgram
 
   deploy:
     runs-on: ubuntu-latest
@@ -75,7 +75,7 @@ jobs:
             # Выполняет pull образа с DockerHub
             sudo docker-compose stop
             sudo docker-compose rm backend
-            sudo docker-compose pull samadhihunter/foodgram:latest
+            sudo docker-compose pull samadhihunter/foodgram
             rm .env
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
