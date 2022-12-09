@@ -1,4 +1,4 @@
-# Yamdb_final
-## CI и CD проекта api_yamdb
-![status workflow](https://github.com/AnnPovor/foodgram-project-react/actions/main.yml/badge.svg)
+# foodgram_project
+## CI и CD проекта foodgram_project
+![status workflow](https://github.com/AnnPovor/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
