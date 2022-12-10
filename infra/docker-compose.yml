@@ -2,7 +2,6 @@ version: '3.3'
 services:
 
   db:
-
     image: postgres:13.0-alpine
     volumes:
       - db_01:/var/lib/postgresql/data/
@@ -11,7 +10,7 @@ services:
       - .env
 
   backend:
-    image: samadhihunter/foodgram:latest
+    image: samadhihunter/foodgram
     restart: always
     depends_on:
       - db
@@ -22,7 +21,7 @@ services:
       - ./.env
 
   frontend:
-    image: samadhihunter/foodgram_frontend:latest
+    image: samadhihunter/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
