@@ -10,7 +10,7 @@ services:
       - .env
 
   backend:
-    image: samadhihunter/foodgram
+    image: samadhihunter/foodgram:latest
     restart: always
     depends_on:
       - db
@@ -21,7 +21,7 @@ services:
       - ./.env
 
   frontend:
-    image: samadhihunter/foodgram_frontend
+    image: samadhihunter/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
