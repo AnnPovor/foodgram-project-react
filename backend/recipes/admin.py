@@ -74,12 +74,3 @@ class UserAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
     list_filter = ('username', 'email')
 
-
-# admin.site.register(Cart, CartAdmin)
-# admin.site.register(Favorite, FavoriteAdmin)
-# admin.site.register(User, UserAdmin)
-# admin.site.register(Subscribe, SubscribeAdmin)
-# admin.site.register(Ingredient, IngredientAdmin)
-# admin.site.register(Tag, TagAdmin)
-# admin.site.register(Recipe, RecipeAdmin)
-# admin.site.register(IngredientRecipe, IngredientRecipeAdmin)

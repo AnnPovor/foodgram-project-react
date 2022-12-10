@@ -113,7 +113,7 @@ class ShoppingCartAPIView(views.APIView):
         user_id = request.user.id
         data = {'recipe': id, 'user': user_id}
         serializer = ShoppingCartSerializer(
-            data=data, context={"request": request}
+            data=data, context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()

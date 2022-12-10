@@ -169,7 +169,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             amount=ingredient['amount'])
             for ingredient in ingredients])
 
-    @transaction.atomic
     def create_tags(self, tags, recipe):
         for tag in tags:
             recipe.tags.add(tag)
