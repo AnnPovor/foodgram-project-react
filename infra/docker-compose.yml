@@ -1,15 +1,13 @@
 version: '3.3'
-
 services:
+
   db:
+    env_file:
+      - .env
     image: postgres:13.0-alpine
-    ports:
-    - "5432:5432"
     volumes:
       - db_01:/var/lib/postgresql/data/
     restart: always
-    env_file:
-      - .env
 
   backend:
     image: samadhihunter/foodgram:latest
@@ -17,8 +15,9 @@ services:
     depends_on:
       - db
     volumes:
-      - static_value:/app/backend/static/
-      - media_value:/app/backend/media/
+      - static_value:/app/static/
+      - media_value:/app/media/
+
     env_file:
       - ./.env
 
@@ -37,8 +36,9 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - static_value:/var/html/static/
       - media_value:/var/html/media/
-      - /frontend/build:/usr/share/nginx/html/
-      - /docs/:/usr/share/nginx/html/api/docs/
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/:/usr/share/nginx/html/api/docs/
+
     restart: always
     depends_on:
       - backend

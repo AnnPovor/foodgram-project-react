@@ -102,9 +102,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Метод выбора сериализатора в зависимости от запроса.
         """
-        if self.request.method == 'GET':
-            return RecipeListSerializer
-        return RecipeSerializer
+        if self.request.method in ('POST', 'PUT', 'PATCH'):
+            return RecipeSerializer
+        return RecipeListSerializer
 
 
 class ShoppingCartAPIView(views.APIView):

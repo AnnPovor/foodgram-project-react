@@ -106,7 +106,8 @@ class IngredientRecipe(models.Model):
 
     amount = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1),
+                    'Количество должно быть больше одного'],
         verbose_name='Количество продукта',
         help_text='Введите количество продукта'
     )
