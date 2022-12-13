@@ -10,12 +10,12 @@ from recipes.models import (Cart, Favorite, Ingredient, IngredientRecipe,
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import filters, permissions, status, views, viewsets
+from rest_framework import permissions, status, views, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from users.models import User
 
-from .filtres import RecipeFilters
+from .filtres import RecipeFilters, IngredientSearchFilter
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CustomUserCreateSerializer, FavoriteSerializer,
                           IngredientSerializer, RecipeListSerializer,
@@ -40,8 +40,9 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [permissions.AllowAny]
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
+    filter_backends = [IngredientSearchFilter]
+    search_fields = ('^name',)
+    pagination_class = None
 
 
 class CreateUserViewSet(UserViewSet):
