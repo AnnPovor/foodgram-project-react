@@ -1,5 +1,6 @@
-from django.db import migrations
 import json
+
+from django.db import migrations
 
 file = open('./data/ingredients.json', encoding="utf-8")
 INITIAL_INGREDIENTS = json.load(file)
