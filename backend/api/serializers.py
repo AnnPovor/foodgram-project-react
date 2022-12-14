@@ -172,12 +172,19 @@ class RecipeSerializer(serializers.ModelSerializer):
             for ingredient in ingredients])
 
     @transaction.atomic
+    def create_tags(self, tags, recipe):
+        for tag in tags:
+            recipe.tags.add(tag)
+
+    @transaction.atomic
     def create(self, validated_data):
         """
         Метод создания рецептов.
         """
         ingredients = validated_data.pop('ingredientrecipes')
+        tags_data = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
+        self.create_tags(tags_data, recipe)
         self.create_bulk(ingredients, recipe)
         return recipe
 
@@ -186,14 +193,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         """
         Метод редактирования рецептов.
         """
-        # tags_data = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredientrecipes')
+        instance.tags.clear()
         IngredientRecipe.objects.filter(recipe=instance).delete()
-        self.create_bulk(ingredients, instance)
-        # self.create_tags(tags_data, instance)
-        super().update(instance, validated_data)
-        instance.save()
-        return instance
+        self.create_bulk(validated_data.pop('ingredientrecipes'), instance)
+        self.create_tags(validated_data.pop('tags'), instance)
+        return super().update(instance, validated_data)
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
