@@ -177,9 +177,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         """
         Метод создания рецептов.
         """
+        author = self.context.get('request').user
         ingredients = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
-        recipe = Recipe.objects.create(**validated_data)
+        recipe = Recipe.objects.create(**validated_data,
+                                       author=author)
         self.create_tags(tags_data, recipe)
         self.create_bulk(ingredients, recipe)
         return recipe
@@ -194,6 +196,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.create_bulk(validated_data.pop('ingredients'), instance)
         self.create_tags(validated_data.pop('tags'), instance)
         return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        return SimpleRecipeSerializer(instance).data
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

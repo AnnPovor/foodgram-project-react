@@ -96,9 +96,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_class = RecipeFilters
     filter_backends = [DjangoFilterBackend, ]
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
     def get_serializer_class(self):
         """
         Метод выбора сериализатора в зависимости от запроса.
@@ -145,17 +142,10 @@ class DownloadCart(viewsets.ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit'
         ).annotate(amount=Sum('amount'))
+        return DownloadCart.pdf(ingredients)
 
-        final_list = {}
-        for ingredient in ingredients:
-            name = ingredient[0]
-            if name not in final_list:
-                final_list[name] = {
-                    'measurement_unit': ingredient[1],
-                    'amount': ingredient[2]
-                }
-            else:
-                final_list[name]['amount'] += ingredient[2]
+    @staticmethod
+    def pdf(ingredients):
         pdfmetrics.registerFont(
             TTFont('FreeSans', 'data/FreeSans.ttf', 'UTF-8'))
 
@@ -167,9 +157,11 @@ class DownloadCart(viewsets.ModelViewSet):
         c.drawString(200, 800, 'Список ингредиентов')
         c.setFont('FreeSans', size=16)
         height = 750
-        for i, (name, data) in enumerate(final_list.items(), 1):
-            c.drawString(75, height, (f'<{i}> {name} - {data["amount"]}, '
-                                      f'{data["measurement_unit"]}'))
+        for count, data in enumerate(ingredients, 1):
+            c.drawString(75, height, (f'{count} {data["ingredient__name"]} '
+                                      f'{data["amount"]} ' 
+                                      f'{data["ingredient__measurement_unit"]}'
+                                      ))
             height -= 25
         c.showPage()
         c.save()
