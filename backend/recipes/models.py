@@ -92,14 +92,12 @@ class IngredientRecipe(models.Model):
     """Модель ингредиентов в рецепте"""
     ingredient = models.ForeignKey(Ingredient,
                                    on_delete=models.CASCADE,
-                                   related_name='ingredientrecipes',
                                    verbose_name='Продукты блюда',
                                    help_text='Выберите продукты для блюда'
                                    )
 
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.CASCADE,
-                               related_name='ingredientrecipes',
                                verbose_name='Рецепт',
                                help_text='Выберите рецепт'
                                )

@@ -116,8 +116,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для создания рецепта"""
     author = CustomUserSerializer(read_only=True)
-    ingredients = AddIngredientSerializer(many=True,
-                                          source='ingredientrecipes')
+    ingredients = AddIngredientSerializer(many=True)
     image = Base64ImageField()
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True)
@@ -128,7 +127,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'text', 'cooking_time')
 
     def validate(self, data):
-        ingredients = data['ingredientrecipes']
+        ingredients = data['ingredients']
         ingredients_list = []
         for ingredient in ingredients:
             ingredient_id = ingredient['id']
@@ -178,7 +177,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         """
         Метод создания рецептов.
         """
-        ingredients = validated_data.pop('ingredientrecipes')
+        ingredients = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         self.create_tags(tags_data, recipe)
@@ -192,7 +191,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         """
         instance.tags.clear()
         IngredientRecipe.objects.filter(recipe=instance).delete()
-        self.create_bulk(validated_data.pop('ingredientrecipes'), instance)
+        self.create_bulk(validated_data.pop('ingredients'), instance)
         self.create_tags(validated_data.pop('tags'), instance)
         return super().update(instance, validated_data)
 

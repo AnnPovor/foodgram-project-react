@@ -103,7 +103,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Метод выбора сериализатора в зависимости от запроса.
         """
-        if self.request.method in ('POST', 'PUT', 'PATCH'):
+        if self.request.method in ('POST', 'PATCH'):
             return RecipeSerializer
         return RecipeListSerializer
 
