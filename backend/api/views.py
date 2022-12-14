@@ -159,7 +159,7 @@ class DownloadCart(viewsets.ModelViewSet):
         height = 750
         for count, data in enumerate(ingredients, 1):
             c.drawString(75, height, (f'{count} {data["ingredient__name"]} '
-                                      f'{data["amount"]} ' 
+                                      f'{data["amount"]} '
                                       f'{data["ingredient__measurement_unit"]}'
                                       ))
             height -= 25
