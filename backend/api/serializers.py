@@ -84,11 +84,10 @@ class RecipeListSerializer(serializers.ModelSerializer):
     """Сериализатор для отображения рецепта"""
     tags = TagSerializer(read_only=True, many=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = IngredientRecipeSerializer(
-        source='ingredientrecipe',
-        many=True,
-        read_only=True,
-    )
+    ingredients = IngredientRecipeSerializer(source='ingredientrecipe',
+                                             many=True,
+                                             read_only=True,
+                                             )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -97,6 +96,10 @@ class RecipeListSerializer(serializers.ModelSerializer):
         fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
                   'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time')
+
+    def get_ingredients(self, obj):
+        queryset = IngredientRecipe.objects.filter(recipe=obj)
+        return IngredientRecipeSerializer(queryset, many=True).data
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
@@ -189,8 +192,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredientrecipes')
         IngredientRecipe.objects.filter(recipe=instance).delete()
-        self.create_tags(tags_data, instance)
         self.create_bulk(ingredients, instance)
+        self.create_tags(tags_data, instance)
         return super().update(instance, validated_data)
 
 

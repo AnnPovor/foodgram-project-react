@@ -15,7 +15,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from users.models import User
 
-from .filtres import RecipeFilters, IngredientSearchFilter
+from .filtres import IngredientSearchFilter, RecipeFilters
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CustomUserCreateSerializer, FavoriteSerializer,
                           IngredientSerializer, RecipeListSerializer,
