@@ -4,7 +4,7 @@
 
 ## Внешний IP
 ```python
-http://158.160.39.9/
+http://51.250.66.186/
 ```
 
 ## Описание
@@ -77,3 +77,6 @@ docker-compose exec backend python manage.py createsuperuser
 ```python
 docker-compose exec backend python manage.py collectstatic --noinput
 ```
+### Вход в админку:
+email: admin@mail.ru
+password: 020519
