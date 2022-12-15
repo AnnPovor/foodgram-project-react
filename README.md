@@ -4,7 +4,7 @@
 
 ## Внешний IP
 ```python
-http://project-foodgram.ddns.net/
+http://goodfoodgram.ddns.net/
 ```
 
 ## Описание
